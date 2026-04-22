@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VeritAI — Plagiarism & AI Detection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090f;
+    --surface: #10101c;
+    --card: #14142a;
+    --border: rgba(120,100,255,0.18);
+    --accent: #7c5cff;
+    --accent2: #00e5c0;
+    --accent3: #ff4f7b;
+    --text: #eeeeff;
+    --muted: #8888aa;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,92,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,92,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOWS ── */
+  .glow-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-orb.tl { width: 500px; height: 500px; top: -150px; left: -100px; background: rgba(124,92,255,0.15); }
+  .glow-orb.br { width: 400px; height: 400px; bottom: -100px; right: -80px; background: rgba(0,229,192,0.10); }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(9,9,15,0.7);
+    position: sticky;
+    top: 0;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+  }
+  .logo span { color: var(--accent2); }
+
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: 0.25rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── MAIN ── */
+  main {
+    position: relative;
+    z-index: 5;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    animation: fadeUp 0.7s ease both;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border: 1px solid rgba(0,229,192,0.3);
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    margin-bottom: 1rem;
+  }
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── TAB BAR ── */
+  .tab-bar {
+    display: flex;
+    gap: 0.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.35rem;
+    margin-bottom: 1.8rem;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    letter-spacing: 0.01em;
+  }
+  .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, rgba(124,92,255,0.25), rgba(0,229,192,0.12));
+    color: var(--text);
+    border: 1px solid rgba(124,92,255,0.35);
+  }
+  .tab-btn .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+  .tab-btn:nth-child(1) .dot { background: var(--accent3); }
+  .tab-btn:nth-child(2) .dot { background: var(--accent); }
+  .tab-btn:nth-child(3) .dot { background: var(--accent2); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.8rem;
+    animation: fadeUp 0.7s 0.15s ease both;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .card-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .char-count {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 220px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(120,100,255,0.15);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.75;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea::placeholder { color: var(--muted); opacity: 0.6; }
+  textarea:focus { border-color: var(--accent); }
+
+  /* ── OPTIONS ── */
+  .options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .checks {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .check-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .check-pill input { display: none; }
+  .check-pill .pill-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); transition: all 0.18s; }
+  .check-pill:has(input:checked) {
+    background: rgba(124,92,255,0.12);
+    border-color: var(--accent);
+    color: var(--text);
+  }
+  .check-pill:has(input:checked) .pill-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  /* ── BUTTON ── */
+  .analyze-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 1.8rem;
+    background: linear-gradient(135deg, var(--accent), #5a3dcc);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 20px rgba(124,92,255,0.3);
+  }
+  .analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(124,92,255,0.45); }
+  .analyze-btn:active { transform: translateY(0); }
+  .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .analyze-btn .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .analyze-btn.loading .spinner { display: block; }
+  .analyze-btn.loading .btn-text { opacity: 0.7; }
+
+  /* ── RESULTS ── */
+  #results {
+    margin-top: 2rem;
+    display: none;
+    animation: fadeUp 0.5s ease both;
+  }
+  #results.visible { display: block; }
+
+  .result-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .result-top { grid-template-columns: 1fr; }
+    header { padding: 1rem 1.2rem; }
+    main { padding: 2rem 1rem 4rem; }
+  }
+
+  .score-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .score-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .score-card.ai-card::before { background: linear-gradient(90deg, var(--accent), #9b6ef3); }
+  .score-card.plag-card::before { background: linear-gradient(90deg, var(--accent3), #ff8c69); }
+  .score-card.original-card::before { background: linear-gradient(90deg, var(--accent2), #00b89c); }
+
+  .score-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.7rem;
+  }
+  .score-value {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .score-card.ai-card .score-value { color: var(--accent); }
+  .score-card.plag-card .score-value { color: var(--accent3); }
+  .score-card.original-card .score-value { color: var(--accent2); }
+  .score-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* Progress ring */
+  .ring-wrap {
+    position: relative;
+    width: 60px; height: 60px;
+    margin: 0 auto 0.6rem;
+  }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 5; }
+  .ring-fg { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1); }
+
+  /* ── DETAILED BREAKDOWN ── */
+  .breakdown-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .breakdown-header {
+    padding: 1rem 1.3rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .breakdown-title {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .breakdown-body {
+    padding: 1.2rem 1.3rem;
+  }
+
+  /* highlighted text */
+  .text-highlight-wrap {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--text);
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .hl-ai {
+    background: rgba(124,92,255,0.22);
+    border-bottom: 1.5px solid var(--accent);
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+  .hl-plag {
+    background: rgba(255,79,123,0.2);
+    border-bottom: 1.5px solid var(--accent3);
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+
+  /* legend */
+  .legend {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    margin-top: 0.8rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 2px;
+  }
+
+  /* analysis list */
+  .analysis-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .analysis-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .analysis-item .ico { margin-top: 1px; flex-shrink: 0; }
+  .analysis-item strong { color: var(--text); font-weight: 500; }
+
+  /* bar charts */
+  .bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-top: 0.3rem;
+  }
+  .bar-item { display: flex; flex-direction: column; gap: 0.25rem; }
+  .bar-label-row { display: flex; justify-content: space-between; font-size: 0.78rem; }
+  .bar-label { color: var(--muted); }
+  .bar-val { font-family: var(--font-mono); color: var(--text); }
+  .bar-track {
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+
+  /* verdict banner */
+  .verdict {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.3rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .verdict.safe { background: rgba(0,229,192,0.08); border-color: rgba(0,229,192,0.3); color: var(--accent2); }
+  .verdict.warning { background: rgba(255,165,0,0.08); border-color: rgba(255,165,0,0.3); color: #ffb347; }
+  .verdict.danger { background: rgba(255,79,123,0.08); border-color: rgba(255,79,123,0.3); color: var(--accent3); }
+  .verdict .verdict-icon { font-size: 1.3rem; }
+  .verdict-text { line-height: 1.5; }
+  .verdict-text strong { display: block; font-family: var(--font-display); font-size: 1rem; }
+
+  /* error */
+  .error-msg {
+    background: rgba(255,79,123,0.1);
+    border: 1px solid rgba(255,79,123,0.3);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    color: var(--accent3);
+    font-size: 0.88rem;
+    display: none;
+    margin-top: 1rem;
+  }
+  .error-msg.visible { display: block; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SETTINGS MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem;
+    width: min(480px, 95vw);
+    animation: fadeUp 0.25s ease;
+  }
+  .modal h2 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .modal p { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.4rem; }
+  .modal label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; }
+  .modal input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    outline: none;
+    margin-bottom: 1.2rem;
+  }
+  .modal input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 0.7rem; justify-content: flex-end; }
+  .btn-ghost {
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    transition: all 0.18s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(120,100,255,0.4); }
+  .btn-primary {
+    padding: 0.6rem 1.4rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.18s;
+  }
+  .btn-primary:hover { background: #6a4de0; }
+
+  .key-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .key-dot { width: 7px; height: 7px; border-radius: 50%; background: #ff4f7b; }
+  .key-dot.set { background: var(--accent2); }
+</style>
+</head>
+<body>
+
+<div class="glow-orb tl"></div>
+<div class="glow-orb br"></div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>🔑 API Key Required</h2>
+    <p>Enter your Anthropic API key to power the AI analysis engine. Your key is stored only in your browser's local storage and never sent to any server other than Anthropic.</p>
+    <label>Anthropic API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveKey()">Save & Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    Verit<span>AI</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem">
+    <div class="key-indicator" id="keyIndicator">
+      <div class="key-dot" id="keyDot"></div>
+      <span id="keyStatus">No API Key</span>
+    </div>
+    <button class="btn-ghost" onclick="openModal()" style="padding:0.4rem 0.9rem;font-size:0.78rem">Settings</button>
+    <div class="badge">v1.0 · Powered by Claude</div>
+  </div>
+</header>
+
+<!-- Main -->
+<main>
+  <div class="hero">
+    <div class="hero-tag">AI-Powered Analysis Engine</div>
+    <h1>Detect <em>AI Writing</em> &<br>Plagiarism Instantly</h1>
+    <p class="hero-sub">Paste any text below. Our Claude-powered engine gives you a deep analysis of AI probability, originality scores, and writing patterns — in seconds.</p>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="setMode('both')" id="tab-both">
+      <span class="dot"></span> Full Scan
+    </button>
+    <button class="tab-btn" onclick="setMode('ai')" id="tab-ai">
+      <span class="dot"></span> AI Detection
+    </button>
+    <button class="tab-btn" onclick="setMode('plagiarism')" id="tab-plagiarism">
+      <span class="dot"></span> Plagiarism Check
+    </button>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-label">// Input Text</div>
+      <div class="char-count" id="charCount">0 characters · 0 words</div>
+    </div>
+    <textarea id="textInput" placeholder="Paste or type your text here... (minimum 50 words for accurate results)"></textarea>
+
+    <div class="options-row">
+      <div class="checks">
+        <label class="check-pill">
+          <input type="checkbox" checked id="chkSentence"> <div class="pill-dot"></div> Sentence Analysis
+        </label>
+        <label class="check-pill">
+          <input type="checkbox" checked id="chkPatterns"> <div class="pill-dot"></div> Pattern Detection
+        </label>
+        <label class="check-pill">
+          <input type="checkbox" id="chkVerbose"> <div class="pill-dot"></div> Verbose Report
+        </label>
+      </div>
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
+        <div class="spinner"></div>
+        <span class="btn-text">Analyze Text ↗</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <!-- Verdict -->
+    <div class="verdict" id="verdictBanner">
+      <span class="verdict-icon" id="verdictIcon">✅</span>
+      <div class="verdict-text">
+        <strong id="verdictTitle">Analysis Complete</strong>
+        <span id="verdictDesc">Your text appears mostly original and human-written.</span>
+      </div>
+    </div>
+
+    <!-- Score Cards -->
+    <div class="result-top">
+      <div class="score-card ai-card">
+        <div class="ring-wrap">
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle class="ring-bg" cx="30" cy="30" r="25"/>
+            <circle class="ring-fg" id="ringAI" cx="30" cy="30" r="25"
+              stroke="#7c5cff"
+              stroke-dasharray="157"
+              stroke-dashoffset="157"/>
+          </svg>
+        </div>
+        <div class="score-label">AI Generated</div>
+        <div class="score-value" id="scoreAI">—</div>
+        <div class="score-sub" id="subAI">probability</div>
+      </div>
+      <div class="score-card plag-card">
+        <div class="ring-wrap">
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle class="ring-bg" cx="30" cy="30" r="25"/>
+            <circle class="ring-fg" id="ringPlag" cx="30" cy="30" r="25"
+              stroke="#ff4f7b"
+              stroke-dasharray="157"
+              stroke-dashoffset="157"/>
+          </svg>
+        </div>
+        <div class="score-label">Plagiarism Risk</div>
+        <div class="score-value" id="scorePlag">—</div>
+        <div class="score-sub" id="subPlag">estimated</div>
+      </div>
+      <div class="score-card original-card">
+        <div class="ring-wrap">
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle class="ring-bg" cx="30" cy="30" r="25"/>
+            <circle class="ring-fg" id="ringOrig" cx="30" cy="30" r="25"
+              stroke="#00e5c0"
+              stroke-dasharray="157"
+              stroke-dashoffset="157"/>
+          </svg>
+        </div>
+        <div class="score-label">Originality</div>
+        <div class="score-value" id="scoreOrig">—</div>
+        <div class="score-sub">score</div>
+      </div>
+    </div>
+
+    <!-- Highlighted Text -->
+    <div class="breakdown-card" id="highlightSection">
+      <div class="breakdown-header">
+        <div class="breakdown-title">📄 Annotated Text</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(124,92,255,0.5)"></div>AI-like phrases</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,79,123,0.45)"></div>Potential plagiarism</div>
+        </div>
+      </div>
+      <div class="breakdown-body">
+        <div class="text-highlight-wrap" id="highlightedText"></div>
+      </div>
+    </div>
+
+    <!-- AI Analysis -->
+    <div class="breakdown-card" id="aiSection">
+      <div class="breakdown-header">
+        <div class="breakdown-title">🤖 AI Writing Indicators</div>
+      </div>
+      <div class="breakdown-body">
+        <div class="bar-row" id="aiBarChart"></div>
+        <ul class="analysis-list" id="aiAnalysisList" style="margin-top:1rem"></ul>
+      </div>
+    </div>
+
+    <!-- Plagiarism Analysis -->
+    <div class="breakdown-card" id="plagSection">
+      <div class="breakdown-header">
+        <div class="breakdown-title">🔍 Plagiarism Analysis</div>
+      </div>
+      <div class="breakdown-body">
+        <ul class="analysis-list" id="plagAnalysisList"></ul>
+      </div>
+    </div>
+
+    <!-- Writing Patterns -->
+    <div class="breakdown-card" id="patternsSection">
+      <div class="breakdown-header">
+        <div class="breakdown-title">📊 Writing Patterns</div>
+      </div>
+      <div class="breakdown-body">
+        <div class="bar-row" id="patternBars"></div>
+        <ul class="analysis-list" id="patternList" style="margin-top:1rem"></ul>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  VeritAI — powered by <a href="https://anthropic.com" target="_blank">Anthropic Claude</a> &nbsp;·&nbsp; Your text is never stored &nbsp;·&nbsp; Built for Netlify
+</footer>
+
+<script>
+// ── STATE ──
+let currentMode = 'both';
+let apiKey = localStorage.getItem('veritai_key') || '';
+
+// ── INIT ──
+updateKeyUI();
+
+const textInput = document.getElementById('textInput');
+textInput.addEventListener('input', () => {
+  const t = textInput.value;
+  const words = t.trim() ? t.trim().split(/\s+/).length : 0;
+  document.getElementById('charCount').textContent = `${t.length} characters · ${words} words`;
+});
+
+function setMode(m) {
+  currentMode = m;
+  ['both','ai','plagiarism'].forEach(id => {
+    document.getElementById('tab-'+id).classList.toggle('active', id === m);
+  });
+}
+
+// ── MODAL ──
+function openModal() { document.getElementById('modal').classList.add('open'); document.getElementById('apiKeyInput').value = apiKey; }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function saveKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val) return;
+  apiKey = val;
+  localStorage.setItem('veritai_key', val);
+  updateKeyUI();
+  closeModal();
+}
+function updateKeyUI() {
+  const dot = document.getElementById('keyDot');
+  const status = document.getElementById('keyStatus');
+  if (apiKey) {
+    dot.classList.add('set');
+    status.textContent = 'Key Set ✓';
+  } else {
+    dot.classList.remove('set');
+    status.textContent = 'No API Key';
+  }
+}
+
+// ── ANALYZE ──
+async function analyze() {
+  const text = textInput.value.trim();
+  if (!text || text.split(/\s+/).length < 10) {
+    showError('Please enter at least 10 words for analysis.');
+    return;
+  }
+  if (!apiKey) {
+    openModal();
+    return;
+  }
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  hideError();
+  document.getElementById('results').classList.remove('visible');
+
+  const verbose = document.getElementById('chkVerbose').checked;
+  const sentences = document.getElementById('chkSentence').checked;
+  const patterns = document.getElementById('chkPatterns').checked;
+
+  const modeInstr = {
+    both: 'Perform BOTH AI detection and plagiarism risk analysis.',
+    ai: 'Focus on AI detection analysis only. Set plagiarism_score to null.',
+    plagiarism: 'Focus on plagiarism risk analysis only. Set ai_score to null.'
+  }[currentMode];
+
+  const prompt = `You are an expert academic integrity AI. Analyze the following text for AI generation probability and plagiarism risk.
+
+${modeInstr}
+
+${verbose ? 'Provide detailed verbose analysis with thorough explanations.' : 'Keep analysis concise.'}
+${sentences ? 'Identify specific sentences or phrases that seem AI-generated or potentially plagiarized.' : ''}
+${patterns ? 'Analyze writing patterns including sentence length variance, vocabulary diversity, and transitions.' : ''}
+
+Respond ONLY with a valid JSON object (no markdown, no preamble) with this exact structure:
+{
+  "ai_score": <0-100 integer or null>,
+  "plagiarism_score": <0-100 integer or null>,
+  "originality_score": <0-100 integer>,
+  "verdict": "<safe|warning|danger>",
+  "verdict_title": "<short title>",
+  "verdict_description": "<one sentence summary>",
+  "ai_indicators": [
+    { "label": "<indicator name>", "value": <0-100>, "description": "<brief explanation>" }
+  ],
+  "plagiarism_findings": [
+    { "type": "<info|warning|danger>", "text": "<finding>" }
+  ],
+  "ai_sentences": ["<sentence or phrase that is AI-like>"],
+  "plagiarism_phrases": ["<phrase that may be plagiarized>"],
+  "pattern_metrics": [
+    { "label": "<metric>", "value": <0-100>, "description": "<explanation>" }
+  ],
+  "pattern_insights": [
+    { "type": "<info|warning|good>", "text": "<insight>" }
+  ]
+}
+
+TEXT TO ANALYZE:
+"""
+${text}
+"""`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const rawText = data.content.map(b => b.text || '').join('');
+    let cleaned = rawText.replace(/```json|```/g, '').trim();
+
+    // Extract JSON object
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Could not parse analysis response.');
+    const result = JSON.parse(jsonMatch[0]);
+
+    renderResults(result, text);
+
+  } catch (e) {
+    showError('Analysis failed: ' + e.message + (e.message.includes('401') ? ' — check your API key.' : ''));
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// ── RENDER ──
+function renderResults(r, originalText) {
+  // Scores
+  const aiScore = r.ai_score;
+  const plagScore = r.plagiarism_score;
+  const origScore = r.originality_score ?? (100 - Math.max(aiScore ?? 0, plagScore ?? 0));
+
+  document.getElementById('scoreAI').textContent = aiScore != null ? aiScore + '%' : 'N/A';
+  document.getElementById('scorePlag').textContent = plagScore != null ? plagScore + '%' : 'N/A';
+  document.getElementById('scoreOrig').textContent = origScore + '%';
+
+  // Rings
+  animateRing('ringAI', aiScore ?? 0);
+  animateRing('ringPlag', plagScore ?? 0);
+  animateRing('ringOrig', origScore);
+
+  // Sub labels
+  document.getElementById('subAI').textContent = aiScore != null ? getRiskLabel(aiScore) : 'not checked';
+  document.getElementById('subPlag').textContent = plagScore != null ? getRiskLabel(plagScore) : 'not checked';
+
+  // Verdict
+  const verdict = document.getElementById('verdictBanner');
+  verdict.className = 'verdict ' + (r.verdict || 'safe');
+  document.getElementById('verdictIcon').textContent = { safe: '✅', warning: '⚠️', danger: '🚨' }[r.verdict] || '✅';
+  document.getElementById('verdictTitle').textContent = r.verdict_title || 'Analysis Complete';
+  document.getElementById('verdictDesc').textContent = r.verdict_description || '';
+
+  // Highlighted text
+  let displayText = originalText;
+  if (r.ai_sentences?.length || r.plagiarism_phrases?.length) {
+    displayText = highlightText(originalText, r.ai_sentences || [], r.plagiarism_phrases || []);
+    document.getElementById('highlightedText').innerHTML = displayText;
+  } else {
+    document.getElementById('highlightedText').textContent = originalText;
+  }
+
+  // AI Indicators bar chart
+  const aiBarEl = document.getElementById('aiBarChart');
+  aiBarEl.innerHTML = '';
+  if (r.ai_indicators?.length) {
+    r.ai_indicators.forEach(ind => {
+      aiBarEl.innerHTML += `
+        <div class="bar-item">
+          <div class="bar-label-row"><span class="bar-label">${esc(ind.label)}</span><span class="bar-val">${ind.value}%</span></div>
+          <div class="bar-track"><div class="bar-fill" data-val="${ind.value}" style="background:linear-gradient(90deg,var(--accent),#9b6ef3)"></div></div>
+        </div>`;
+    });
+  }
+
+  // AI analysis list
+  const aiList = document.getElementById('aiAnalysisList');
+  aiList.innerHTML = '';
+  if (r.ai_indicators?.length) {
+    r.ai_indicators.forEach(ind => {
+      aiList.innerHTML += `<li class="analysis-item"><span class="ico">🔹</span><span><strong>${esc(ind.label)}:</strong> ${esc(ind.description)}</span></li>`;
+    });
+  }
+
+  // Plagiarism findings
+  const plagList = document.getElementById('plagAnalysisList');
+  plagList.innerHTML = '';
+  if (r.plagiarism_findings?.length) {
+    r.plagiarism_findings.forEach(f => {
+      const ico = { info: 'ℹ️', warning: '⚠️', danger: '🚨' }[f.type] || 'ℹ️';
+      plagList.innerHTML += `<li class="analysis-item"><span class="ico">${ico}</span><span>${esc(f.text)}</span></li>`;
+    });
+  } else {
+    plagList.innerHTML = '<li class="analysis-item"><span class="ico">✅</span><span>No significant plagiarism indicators found.</span></li>';
+  }
+
+  // Pattern bars
+  const patBars = document.getElementById('patternBars');
+  patBars.innerHTML = '';
+  if (r.pattern_metrics?.length) {
+    r.pattern_metrics.forEach(m => {
+      patBars.innerHTML += `
+        <div class="bar-item">
+          <div class="bar-label-row"><span class="bar-label">${esc(m.label)}</span><span class="bar-val">${m.value}%</span></div>
+          <div class="bar-track"><div class="bar-fill" data-val="${m.value}" style="background:linear-gradient(90deg,var(--accent2),#00b89c)"></div></div>
+        </div>`;
+    });
+  }
+
+  // Pattern insights
+  const patList = document.getElementById('patternList');
+  patList.innerHTML = '';
+  if (r.pattern_insights?.length) {
+    r.pattern_insights.forEach(p => {
+      const ico = { info: '📌', warning: '⚠️', good: '✅' }[p.type] || '📌';
+      patList.innerHTML += `<li class="analysis-item"><span class="ico">${ico}</span><span>${esc(p.text)}</span></li>`;
+    });
+  }
+
+  // Show/hide sections by mode
+  document.getElementById('aiSection').style.display = currentMode === 'plagiarism' ? 'none' : 'block';
+  document.getElementById('plagSection').style.display = currentMode === 'ai' ? 'none' : 'block';
+  document.getElementById('patternsSection').style.display = 'block';
+
+  document.getElementById('results').classList.add('visible');
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      el.style.width = el.dataset.val + '%';
+    });
+  }, 100);
+
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function animateRing(id, pct) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const circumference = 157;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => { el.style.strokeDashoffset = offset; }, 100);
+}
+
+function getRiskLabel(v) {
+  if (v < 20) return 'very low';
+  if (v < 40) return 'low';
+  if (v < 60) return 'moderate';
+  if (v < 80) return 'high';
+  return 'very high';
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightText(text, aiPhrases, plagPhrases) {
+  let result = esc(text);
+  // Highlight plagiarism first (so AI doesn't double-wrap)
+  plagPhrases.forEach(phrase => {
+    const safe = esc(phrase.trim());
+    if (safe.length < 5) return;
+    result = result.replace(safe, `<span class="hl-plag">${safe}</span>`);
+  });
+  aiPhrases.forEach(phrase => {
+    const safe = esc(phrase.trim());
+    if (safe.length < 5) return;
+    result = result.replace(safe, `<span class="hl-ai">${safe}</span>`);
+  });
+  return result;
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = '⚠ ' + msg;
+  el.classList.add('visible');
+}
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+
+// Check if key exists on load
+if (!apiKey) {
+  // Slight delay for effect
+  setTimeout(openModal, 800);
+}
+</script>
+</body>
+</html>
