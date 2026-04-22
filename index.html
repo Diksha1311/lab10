@@ -15,6 +15,7 @@
     --accent: #7c5cff;
     --accent2: #00e5c0;
     --accent3: #ff4f7b;
+    --groq: #f55036;
     --text: #eeeeff;
     --muted: #8888aa;
     --font-display: 'Syne', sans-serif;
@@ -56,12 +57,15 @@
     backdrop-filter: blur(12px);
     background: rgba(9,9,15,0.7);
   }
-
   .logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 0.5rem; }
   .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
   .logo span { color: var(--accent2); }
-
   .badge { font-family: var(--font-mono); font-size: 0.68rem; padding: 0.25rem 0.65rem; border: 1px solid var(--border); border-radius: 20px; color: var(--muted); letter-spacing: 0.04em; }
+  .key-indicator { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+  .key-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent3); transition: background 0.3s; }
+  .key-dot.set { background: var(--accent2); }
+  .btn-ghost { padding: 0.4rem 0.9rem; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; font-family: var(--font-display); font-size: 0.78rem; transition: all 0.18s; }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(120,100,255,0.4); }
 
   main { position: relative; z-index: 5; max-width: 900px; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
 
@@ -84,7 +88,6 @@
   .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
   .card-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
   .char-count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
-
   textarea { width: 100%; min-height: 220px; background: rgba(0,0,0,0.3); border: 1px solid rgba(120,100,255,0.15); border-radius: 12px; padding: 1rem 1.2rem; color: var(--text); font-family: var(--font-body); font-size: 0.95rem; line-height: 1.75; resize: vertical; outline: none; transition: border-color 0.2s; }
   textarea::placeholder { color: var(--muted); opacity: 0.6; }
   textarea:focus { border-color: var(--accent); }
@@ -109,7 +112,6 @@
   #results.visible { display: block; }
 
   .result-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-
   .score-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem; text-align: center; position: relative; overflow: hidden; }
   .score-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
   .score-card.ai-card::before { background: linear-gradient(90deg, var(--accent), #9b6ef3); }
@@ -129,12 +131,12 @@
 
   .breakdown-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
   .breakdown-header { padding: 1rem 1.3rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .breakdown-title { font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+  .breakdown-title { font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; }
   .breakdown-body { padding: 1.2rem 1.3rem; }
 
   .text-highlight-wrap { font-family: var(--font-body); font-size: 0.9rem; line-height: 1.9; color: var(--text); background: rgba(0,0,0,0.25); border-radius: 10px; padding: 1rem 1.2rem; white-space: pre-wrap; word-break: break-word; }
-  .hl-ai { background: rgba(124,92,255,0.22); border-bottom: 1.5px solid var(--accent); border-radius: 3px; padding: 0 2px; }
-  .hl-plag { background: rgba(255,79,123,0.2); border-bottom: 1.5px solid var(--accent3); border-radius: 3px; padding: 0 2px; }
+  .hl-ai   { background: rgba(124,92,255,0.22); border-bottom: 1.5px solid var(--accent);  border-radius: 3px; padding: 0 2px; }
+  .hl-plag { background: rgba(255,79,123,0.2);  border-bottom: 1.5px solid var(--accent3); border-radius: 3px; padding: 0 2px; }
 
   .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--muted); }
@@ -154,9 +156,9 @@
   .bar-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(.4,0,.2,1); width: 0%; }
 
   .verdict { display: flex; align-items: center; gap: 0.8rem; padding: 1rem 1.3rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 500; border: 1px solid; }
-  .verdict.safe { background: rgba(0,229,192,0.08); border-color: rgba(0,229,192,0.3); color: var(--accent2); }
-  .verdict.warning { background: rgba(255,165,0,0.08); border-color: rgba(255,165,0,0.3); color: #ffb347; }
-  .verdict.danger { background: rgba(255,79,123,0.08); border-color: rgba(255,79,123,0.3); color: var(--accent3); }
+  .verdict.safe    { background: rgba(0,229,192,0.08);  border-color: rgba(0,229,192,0.3);  color: var(--accent2); }
+  .verdict.warning { background: rgba(255,165,0,0.08);  border-color: rgba(255,165,0,0.3);  color: #ffb347; }
+  .verdict.danger  { background: rgba(255,79,123,0.08); border-color: rgba(255,79,123,0.3); color: var(--accent3); }
   .verdict .verdict-icon { font-size: 1.3rem; }
   .verdict-text { line-height: 1.5; }
   .verdict-text strong { display: block; font-family: var(--font-display); font-size: 1rem; }
@@ -169,25 +171,21 @@
   .modal-overlay.open { display: flex; }
   .modal { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; width: min(500px, 95vw); animation: fadeUp 0.25s ease; }
   .modal-top { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.3rem; }
-  .gemini-badge { background: linear-gradient(135deg, #4285f4 0%, #34a853 40%, #fbbc05 70%, #ea4335 100%); border-radius: 10px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .groq-badge { background: linear-gradient(135deg, #f55036, #ff8a65); border-radius: 10px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
   .modal h2 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; margin-bottom: 0.2rem; }
   .modal-sub { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); }
   .modal-desc { font-size: 0.83rem; color: var(--muted); margin-bottom: 1.3rem; line-height: 1.65; }
   .modal-desc a { color: var(--accent2); text-decoration: none; }
   .modal-desc a:hover { text-decoration: underline; }
   .field-label { display: block; font-size: 0.73rem; color: var(--muted); margin-bottom: 0.4rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.07em; }
-  .modal input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; color: var(--text); font-family: var(--font-mono); font-size: 0.88rem; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; }
-  .modal input:focus { border-color: #4285f4; }
+  .modal input, .model-select { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; color: var(--text); font-family: var(--font-mono); font-size: 0.88rem; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; }
+  .modal input:focus, .model-select:focus { border-color: var(--groq); }
+  .model-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238888aa' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-color: rgba(0,0,0,0.4); }
+  .model-select option { background: #14142a; }
   .modal-note { background: rgba(0,229,192,0.07); border: 1px solid rgba(0,229,192,0.2); border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.78rem; color: var(--accent2); margin-bottom: 1.4rem; line-height: 1.5; }
   .modal-actions { display: flex; gap: 0.7rem; justify-content: flex-end; }
-  .btn-ghost { padding: 0.6rem 1.2rem; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; font-family: var(--font-display); font-size: 0.85rem; transition: all 0.18s; }
-  .btn-ghost:hover { color: var(--text); border-color: rgba(120,100,255,0.4); }
-  .btn-google { padding: 0.6rem 1.4rem; background: linear-gradient(135deg, #4285f4, #5a72f5); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; transition: all 0.18s; box-shadow: 0 3px 14px rgba(66,133,244,0.35); }
-  .btn-google:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(66,133,244,0.45); }
-
-  .key-indicator { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
-  .key-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent3); transition: background 0.3s; }
-  .key-dot.set { background: var(--accent2); }
+  .btn-groq { padding: 0.6rem 1.4rem; background: linear-gradient(135deg, #f55036, #ff8a65); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; transition: all 0.18s; box-shadow: 0 3px 14px rgba(245,80,54,0.35); }
+  .btn-groq:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,80,54,0.45); }
 
   footer { position: relative; z-index: 5; text-align: center; padding: 2rem; color: var(--muted); font-size: 0.78rem; border-top: 1px solid var(--border); font-family: var(--font-mono); }
   footer a { color: var(--accent2); text-decoration: none; }
@@ -212,24 +210,31 @@
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-top">
-      <div class="gemini-badge">✦</div>
+      <div class="groq-badge">⚡</div>
       <div>
-        <h2>Connect Google Gemini</h2>
-        <div class="modal-sub">gemini-2.0-flash · free tier available</div>
+        <h2>Connect Groq API</h2>
+        <div class="modal-sub">llama-3.3-70b · free tier available</div>
       </div>
     </div>
     <p class="modal-desc">
-      Get your free API key from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio →</a><br>
-      No credit card required for the free tier. Paste your key below to enable AI-powered analysis.
+      Get your free API key from <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys →</a><br>
+      No credit card required. Paste your key below to enable AI-powered analysis.
     </p>
-    <label class="field-label">Gemini API Key</label>
-    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off" />
+    <label class="field-label">Groq API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" />
+    <label class="field-label">Model</label>
+    <select class="model-select" id="modelSelect">
+      <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (recommended)</option>
+      <option value="llama3-8b-8192">llama3-8b-8192 (faster / lighter)</option>
+      <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+      <option value="gemma2-9b-it">gemma2-9b-it</option>
+    </select>
     <div class="modal-note">
-      🔒 Stored only in your browser's localStorage — sent exclusively to Google's API, never to any other server.
+      🔒 Stored only in your browser's localStorage — sent exclusively to Groq's API, never to any other server.
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-google" onclick="saveKey()">Save & Continue ✦</button>
+      <button class="btn-groq" onclick="saveKey()">Save & Continue ⚡</button>
     </div>
   </div>
 </div>
@@ -245,23 +250,23 @@
       <div class="key-dot" id="keyDot"></div>
       <span id="keyStatus">No API Key</span>
     </div>
-    <button class="btn-ghost" onclick="openModal()" style="padding:0.4rem 0.9rem;font-size:0.78rem">⚙ Settings</button>
-    <div class="badge">Gemini 2.0 Flash · Free Tier</div>
+    <button class="btn-ghost" onclick="openModal()">⚙ Settings</button>
+    <div class="badge">Groq · Free Tier</div>
   </div>
 </header>
 
 <!-- ── MAIN ── -->
 <main>
   <div class="hero">
-    <div class="hero-tag">Powered by Google Gemini API</div>
+    <div class="hero-tag">Powered by Groq — Ultra-fast Inference</div>
     <h1>Detect <em>AI Writing</em> &<br>Plagiarism Instantly</h1>
-    <p class="hero-sub">Paste any text below. Gemini 2.0 Flash performs a deep analysis of AI probability, originality scores, and writing patterns — in seconds, on the free tier.</p>
+    <p class="hero-sub">Paste any text below. Groq's blazing-fast LLM inference performs a deep analysis of AI probability, originality scores, and writing patterns — in seconds, on the free tier.</p>
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="setMode('both')" id="tab-both"><span class="dot"></span>Full Scan</button>
-    <button class="tab-btn" onclick="setMode('ai')" id="tab-ai"><span class="dot"></span>AI Detection</button>
-    <button class="tab-btn" onclick="setMode('plagiarism')" id="tab-plagiarism"><span class="dot"></span>Plagiarism Check</button>
+    <button class="tab-btn active" onclick="setMode('both')"       id="tab-both"><span class="dot"></span>Full Scan</button>
+    <button class="tab-btn"        onclick="setMode('ai')"         id="tab-ai"><span class="dot"></span>AI Detection</button>
+    <button class="tab-btn"        onclick="setMode('plagiarism')" id="tab-plagiarism"><span class="dot"></span>Plagiarism Check</button>
   </div>
 
   <div class="card">
@@ -287,7 +292,6 @@
 
   <!-- ── RESULTS ── -->
   <div id="results">
-
     <div class="verdict" id="verdictBanner">
       <span class="verdict-icon" id="verdictIcon">✅</span>
       <div class="verdict-text">
@@ -367,74 +371,66 @@
         <ul class="analysis-list" id="patternList" style="margin-top:1rem"></ul>
       </div>
     </div>
-
   </div>
 </main>
 
 <footer>
-  VeritAI — powered by <a href="https://deepmind.google/technologies/gemini/" target="_blank">Google Gemini</a>
+  VeritAI — powered by <a href="https://groq.com" target="_blank">Groq</a>
   &nbsp;·&nbsp; Your text is never stored
-  &nbsp;·&nbsp; Built for Netlify
+  &nbsp;·&nbsp; Deploy on Netlify
 </footer>
 
 <script>
 // ── STATE ──
 let currentMode = 'both';
-let apiKey = localStorage.getItem('veritai_gemini_key') || '';
+let apiKey      = localStorage.getItem('veritai_groq_key')   || '';
+let groqModel   = localStorage.getItem('veritai_groq_model') || 'llama-3.3-70b-versatile';
 
 updateKeyUI();
 
-// Word/char counter
 document.getElementById('textInput').addEventListener('input', () => {
   const t = document.getElementById('textInput').value;
   const words = t.trim() ? t.trim().split(/\s+/).length : 0;
   document.getElementById('charCount').textContent = `${t.length} characters · ${words} words`;
 });
 
-// ── MODE ──
 function setMode(m) {
   currentMode = m;
-  ['both','ai','plagiarism'].forEach(id => {
-    document.getElementById('tab-'+id).classList.toggle('active', id === m);
-  });
+  ['both','ai','plagiarism'].forEach(id =>
+    document.getElementById('tab-'+id).classList.toggle('active', id === m)
+  );
 }
 
 // ── MODAL ──
 function openModal() {
   document.getElementById('modal').classList.add('open');
   document.getElementById('apiKeyInput').value = apiKey;
+  document.getElementById('modelSelect').value = groqModel;
 }
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
 function saveKey() {
   const val = document.getElementById('apiKeyInput').value.trim();
-  if (!val) {
-    document.getElementById('apiKeyInput').style.borderColor = 'var(--accent3)';
-    return;
-  }
-  apiKey = val;
-  localStorage.setItem('veritai_gemini_key', val);
+  if (!val) { document.getElementById('apiKeyInput').style.borderColor = 'var(--accent3)'; return; }
+  apiKey    = val;
+  groqModel = document.getElementById('modelSelect').value;
+  localStorage.setItem('veritai_groq_key',   apiKey);
+  localStorage.setItem('veritai_groq_model', groqModel);
   updateKeyUI();
   closeModal();
 }
 function updateKeyUI() {
   document.getElementById('keyDot').classList.toggle('set', !!apiKey);
-  document.getElementById('keyStatus').textContent = apiKey ? 'Gemini Key Set ✓' : 'No API Key';
+  document.getElementById('keyStatus').textContent = apiKey ? 'Groq Key Set ✓' : 'No API Key';
 }
 
 // ── ANALYZE ──
 async function analyze() {
   const text = document.getElementById('textInput').value.trim();
-  if (!text || text.split(/\s+/).length < 10) {
-    showError('Please enter at least 10 words for analysis.');
-    return;
-  }
+  if (!text || text.split(/\s+/).length < 10) { showError('Please enter at least 10 words for analysis.'); return; }
   if (!apiKey) { openModal(); return; }
 
   const btn = document.getElementById('analyzeBtn');
-  btn.classList.add('loading');
-  btn.disabled = true;
+  btn.classList.add('loading'); btn.disabled = true;
   hideError();
   document.getElementById('results').classList.remove('visible');
 
@@ -448,33 +444,27 @@ async function analyze() {
     plagiarism: 'Focus on plagiarism risk only. Set ai_score to null.'
   }[currentMode];
 
-  const prompt = `You are an expert academic integrity analyst. ${modeInstr}
+  const systemPrompt = `You are an expert academic integrity analyst. Always respond with valid JSON only — no markdown, no code fences, no preamble.`;
+
+  const userPrompt = `${modeInstr}
 ${verbose   ? 'Provide detailed verbose analysis with thorough explanations.' : 'Keep analysis concise.'}
 ${sentences ? 'Identify specific sentences or phrases that seem AI-generated or potentially plagiarized.' : ''}
 ${patterns  ? 'Analyze writing patterns: sentence length variance, vocabulary diversity, connective transitions.' : ''}
 
-Return ONLY a valid JSON object — no markdown, no code fences, no preamble:
+Return ONLY this JSON (no markdown):
 {
   "ai_score": <0-100 integer or null>,
   "plagiarism_score": <0-100 integer or null>,
   "originality_score": <0-100 integer>,
   "verdict": "<safe|warning|danger>",
-  "verdict_title": "<short title string>",
+  "verdict_title": "<short title>",
   "verdict_description": "<one sentence summary>",
-  "ai_indicators": [
-    { "label": "<name>", "value": <0-100>, "description": "<explanation>" }
-  ],
-  "plagiarism_findings": [
-    { "type": "<info|warning|danger>", "text": "<finding>" }
-  ],
-  "ai_sentences": ["<AI-like phrase or sentence>"],
+  "ai_indicators": [{ "label": "<name>", "value": <0-100>, "description": "<explanation>" }],
+  "plagiarism_findings": [{ "type": "<info|warning|danger>", "text": "<finding>" }],
+  "ai_sentences": ["<AI-like phrase>"],
   "plagiarism_phrases": ["<possibly plagiarized phrase>"],
-  "pattern_metrics": [
-    { "label": "<metric>", "value": <0-100>, "description": "<explanation>" }
-  ],
-  "pattern_insights": [
-    { "type": "<info|warning|good>", "text": "<insight>" }
-  ]
+  "pattern_metrics": [{ "label": "<metric>", "value": <0-100>, "description": "<explanation>" }],
+  "pattern_insights": [{ "type": "<info|warning|good>", "text": "<insight>" }]
 }
 
 TEXT TO ANALYZE:
@@ -482,183 +472,148 @@ TEXT TO ANALYZE:
 ${text}
 """`;
 
-  // ── GEMINI API ──
-  const model = 'gemini-2.0-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-
   try {
-    const res = await fetch(url, {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.15,
-          maxOutputTokens: 2048,
-          responseMimeType: 'application/json'
-        }
+        model: groqModel,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: userPrompt   }
+        ],
+        temperature: 0.15,
+        max_tokens: 2048,
+        response_format: { type: 'json_object' }
       })
     });
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       const msg = err.error?.message || `HTTP ${res.status}`;
-      if (res.status === 400) throw new Error('Bad request — check your API key or try again. ' + msg);
-      if (res.status === 403) throw new Error('API key not authorized. Enable "Generative Language API" in your Google Cloud project.');
+      if (res.status === 401) throw new Error('Invalid API key — check your key at console.groq.com/keys.');
       if (res.status === 429) throw new Error('Rate limit reached — wait a moment and try again.');
+      if (res.status === 400) throw new Error('Bad request: ' + msg);
       throw new Error(msg);
     }
 
-    const data = await res.json();
-    const rawText = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
-    if (!rawText) {
-      const reason = data.candidates?.[0]?.finishReason;
-      throw new Error(reason === 'SAFETY' ? 'Gemini blocked the response for safety reasons. Try different text.' : 'Empty response from Gemini. Please try again.');
-    }
+    const data    = await res.json();
+    const rawText = data.choices?.[0]?.message?.content || '';
+    if (!rawText) throw new Error('Empty response from Groq. Please try again.');
 
-    // Strip any accidental fences
-    const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    const cleaned   = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Could not parse the analysis. Please try again.');
+    if (!jsonMatch) throw new Error('Could not parse analysis response. Try switching models in Settings.');
     const result = JSON.parse(jsonMatch[0]);
-
     renderResults(result, text);
 
   } catch (e) {
     showError('Analysis failed: ' + e.message);
   } finally {
-    btn.classList.remove('loading');
-    btn.disabled = false;
+    btn.classList.remove('loading'); btn.disabled = false;
   }
 }
 
 // ── RENDER ──
 function renderResults(r, originalText) {
-  const aiScore   = r.ai_score   ?? null;
-  const plagScore = r.plagiarism_score ?? null;
+  const aiScore   = r.ai_score          ?? null;
+  const plagScore = r.plagiarism_score  ?? null;
   const origScore = r.originality_score ?? (100 - Math.max(aiScore ?? 0, plagScore ?? 0));
 
   set('scoreAI',   aiScore   != null ? aiScore   + '%' : 'N/A');
   set('scorePlag', plagScore != null ? plagScore + '%' : 'N/A');
   set('scoreOrig', origScore + '%');
-
   animateRing('ringAI',   aiScore   ?? 0);
   animateRing('ringPlag', plagScore ?? 0);
   animateRing('ringOrig', origScore);
-
   set('subAI',   aiScore   != null ? getRiskLabel(aiScore)   : 'not checked');
   set('subPlag', plagScore != null ? getRiskLabel(plagScore) : 'not checked');
 
-  // Verdict
   const vBanner = document.getElementById('verdictBanner');
   vBanner.className = 'verdict ' + (r.verdict || 'safe');
   set('verdictIcon',  { safe:'✅', warning:'⚠️', danger:'🚨' }[r.verdict] || '✅');
-  set('verdictTitle', r.verdict_title || 'Analysis Complete');
+  set('verdictTitle', r.verdict_title       || 'Analysis Complete');
   set('verdictDesc',  r.verdict_description || '');
 
-  // Annotated text
   const hlEl = document.getElementById('highlightedText');
-  if ((r.ai_sentences?.length || r.plagiarism_phrases?.length)) {
+  if (r.ai_sentences?.length || r.plagiarism_phrases?.length) {
     hlEl.innerHTML = highlightText(originalText, r.ai_sentences || [], r.plagiarism_phrases || []);
-  } else {
-    hlEl.textContent = originalText;
-  }
+  } else { hlEl.textContent = originalText; }
 
-  // AI indicator bars
-  const aiBarEl = document.getElementById('aiBarChart');
-  aiBarEl.innerHTML = (r.ai_indicators || []).map(ind => `
+  document.getElementById('aiBarChart').innerHTML = (r.ai_indicators || []).map(ind => `
     <div class="bar-item">
       <div class="bar-label-row"><span class="bar-label">${esc(ind.label)}</span><span class="bar-val">${ind.value}%</span></div>
       <div class="bar-track"><div class="bar-fill" data-val="${ind.value}" style="background:linear-gradient(90deg,var(--accent),#9b6ef3)"></div></div>
     </div>`).join('');
 
-  // AI list
   document.getElementById('aiAnalysisList').innerHTML = (r.ai_indicators || []).map(ind =>
     `<li class="analysis-item"><span class="ico">🔹</span><span><strong>${esc(ind.label)}:</strong> ${esc(ind.description)}</span></li>`
   ).join('');
 
-  // Plagiarism findings
   const plagList = document.getElementById('plagAnalysisList');
-  if (r.plagiarism_findings?.length) {
-    plagList.innerHTML = r.plagiarism_findings.map(f => {
-      const ico = { info:'ℹ️', warning:'⚠️', danger:'🚨' }[f.type] || 'ℹ️';
-      return `<li class="analysis-item"><span class="ico">${ico}</span><span>${esc(f.text)}</span></li>`;
-    }).join('');
-  } else {
-    plagList.innerHTML = '<li class="analysis-item"><span class="ico">✅</span><span>No significant plagiarism indicators detected.</span></li>';
-  }
+  plagList.innerHTML = r.plagiarism_findings?.length
+    ? r.plagiarism_findings.map(f => {
+        const ico = { info:'ℹ️', warning:'⚠️', danger:'🚨' }[f.type] || 'ℹ️';
+        return `<li class="analysis-item"><span class="ico">${ico}</span><span>${esc(f.text)}</span></li>`;
+      }).join('')
+    : '<li class="analysis-item"><span class="ico">✅</span><span>No significant plagiarism indicators detected.</span></li>';
 
-  // Pattern bars
   document.getElementById('patternBars').innerHTML = (r.pattern_metrics || []).map(m => `
     <div class="bar-item">
       <div class="bar-label-row"><span class="bar-label">${esc(m.label)}</span><span class="bar-val">${m.value}%</span></div>
       <div class="bar-track"><div class="bar-fill" data-val="${m.value}" style="background:linear-gradient(90deg,var(--accent2),#00b89c)"></div></div>
     </div>`).join('');
 
-  // Pattern insights
   document.getElementById('patternList').innerHTML = (r.pattern_insights || []).map(p => {
     const ico = { info:'📌', warning:'⚠️', good:'✅' }[p.type] || '📌';
     return `<li class="analysis-item"><span class="ico">${ico}</span><span>${esc(p.text)}</span></li>`;
   }).join('');
 
-  // Show/hide sections
-  document.getElementById('aiSection').style.display      = currentMode === 'plagiarism' ? 'none' : 'block';
-  document.getElementById('plagSection').style.display    = currentMode === 'ai'         ? 'none' : 'block';
+  document.getElementById('aiSection').style.display       = currentMode === 'plagiarism' ? 'none' : 'block';
+  document.getElementById('plagSection').style.display     = currentMode === 'ai'         ? 'none' : 'block';
   document.getElementById('patternsSection').style.display = 'block';
 
   document.getElementById('results').classList.add('visible');
-
   setTimeout(() => {
     document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = el.dataset.val + '%'; });
   }, 120);
-
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── HELPERS ──
 function set(id, val) { document.getElementById(id).textContent = val; }
-
 function animateRing(id, pct) {
   const el = document.getElementById(id);
   if (!el) return;
   setTimeout(() => { el.style.strokeDashoffset = 157 - (pct / 100) * 157; }, 100);
 }
-
 function getRiskLabel(v) {
-  if (v < 20) return 'very low';
-  if (v < 40) return 'low';
-  if (v < 60) return 'moderate';
-  if (v < 80) return 'high';
-  return 'very high';
+  if (v < 20) return 'very low'; if (v < 40) return 'low';
+  if (v < 60) return 'moderate'; if (v < 80) return 'high'; return 'very high';
 }
-
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-
 function highlightText(text, aiPhrases, plagPhrases) {
   let result = esc(text);
   plagPhrases.forEach(p => {
-    const s = esc(p.trim());
-    if (s.length < 5) return;
+    const s = esc(p.trim()); if (s.length < 5) return;
     result = result.split(s).join(`<span class="hl-plag">${s}</span>`);
   });
   aiPhrases.forEach(p => {
-    const s = esc(p.trim());
-    if (s.length < 5) return;
+    const s = esc(p.trim()); if (s.length < 5) return;
     result = result.split(s).join(`<span class="hl-ai">${s}</span>`);
   });
   return result;
 }
-
 function showError(msg) {
   const el = document.getElementById('errorMsg');
-  el.innerHTML = '⚠ ' + esc(msg);
-  el.classList.add('visible');
+  el.innerHTML = '⚠ ' + esc(msg); el.classList.add('visible');
 }
-function hideError() {
-  document.getElementById('errorMsg').classList.remove('visible');
-}
+function hideError() { document.getElementById('errorMsg').classList.remove('visible'); }
 
 // Auto-open modal if no key
 if (!apiKey) setTimeout(openModal, 700);
